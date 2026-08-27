@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Magical Surprise for Riddhi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --p1:#ffd6e8; --p2:#ffb8d9; --p3:#ff8fc0; --p4:#e85d9a;
+    --plum:#8d497b; --plum-soft:#7a4a68;
+    --glass: rgba(255,255,255,0.32);
+    --glass-strong: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.65);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Outfit', sans-serif;
+    color:var(--plum);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+    background: linear-gradient(120deg, #ffe0ef, #ffc7e0, #ffd9ec, #ffb8d9);
+    background-size: 300% 300%;
+    animation: gradientMove 16s ease infinite;
+  }
+  @keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; }
+
+  /* ---------- Floating particles ---------- */
+  #particles{ position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+  .particle{
+    position:absolute;
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,182,213,0.2));
+    filter: blur(1px);
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) scale(1); opacity:0; }
+    10%{ opacity:0.8; }
+    90%{ opacity:0.6; }
+    100%{ transform: translateY(-110vh) translateX(20px) scale(0.6); opacity:0; }
+  }
+
+  .glass{
+    background:var(--glass);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 8px 40px rgba(216,80,140,0.18);
+    border-radius:28px;
+  }
+
+  /* ---------- Opening Screen ---------- */
+  #opening{
+    position:fixed; inset:0; z-index:50;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:26px; padding:24px;
+    background: linear-gradient(135deg, #ffcbe1, #ff9cc4, #ffd9ec);
+    background-size:220% 220%;
+    animation: gradientMove 12s ease infinite;
+    cursor:pointer;
+    transition: opacity 0.9s ease, visibility 0.9s ease;
+  }
+  #opening.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  .opening-sparkle{ font-size:1rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--plum-soft); opacity:0.85; }
+  #opening h1{
+    font-size:clamp(2rem, 8vw, 3.4rem);
+    font-style:italic;
+    color:#fff;
+    text-shadow: 0 4px 24px rgba(216,80,140,0.4);
+    max-width:600px;
+    line-height:1.2;
+  }
+  .tap-hint{
+    margin-top:14px;
+    font-size:0.85rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.9);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:0.6;} 50%{opacity:1;} }
+  .orb-ring{
+    width:90px; height:90px; border-radius:50%;
+    border:2px solid rgba(255,255,255,0.7);
+    display:flex; align-items:center; justify-content:center;
+    font-size:2rem;
+    animation: ringPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes ringPulse{ 0%,100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(255,255,255,0.4);} 50%{ transform:scale(1.08); box-shadow:0 0 0 14px rgba(255,255,255,0);} }
+
+  /* ---------- Main Interface ---------- */
+  #main{ position:relative; z-index:2; min-height:100vh; }
+
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:32px 20px; gap:24px;
+    opacity:0; transform:translateY(30px);
+    transition: opacity 1.1s ease, transform 1.1s ease;
+  }
+  .hero.reveal{ opacity:1; transform:translateY(0); }
+  .eyebrow{ font-size:0.78rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--p4); font-weight:500; }
+  .hero h1{
+    font-size:clamp(2.4rem, 9vw, 4.6rem);
+    line-height:1.08;
+    color:var(--plum);
+  }
+  .hero h1 em{ font-style:italic; color:var(--p4); }
+  .hero p.sub{ max-width:420px; color:var(--plum-soft); font-size:1.05rem; line-height:1.6; }
+
+  .surprise-btn{
+    margin-top:10px;
+    padding:18px 40px;
+    border-radius:50px;
+    border:1px solid var(--glass-border);
+    background: linear-gradient(135deg, #ff9cc4, #ff6fa5);
+    color:#fff;
+    font-family:'Outfit', sans-serif;
+    font-weight:600;
+    font-size:1.02rem;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    box-shadow: 0 10px 30px rgba(232,93,138,0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .surprise-btn:hover{ transform:translateY(-3px) scale(1.03); box-shadow:0 14px 36px rgba(232,93,138,0.45); }
+  .surprise-btn:active{ transform:translateY(0) scale(0.98); }
+
+  .scroll-hint{
+    margin-top:36px;
+    font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--plum-soft); opacity:0.7;
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(8px);} }
+
+  /* ---------- Secret Message Overlay ---------- */
+  #messageOverlay{
+    position:fixed; inset:0; z-index:60;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    background: rgba(122,58,86,0.35);
+    backdrop-filter: blur(6px);
+    opacity:0; visibility:hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+  }
+  #messageOverlay.show{ opacity:1; visibility:visible; }
+  .message-card{
+    max-width:480px;
+    width:100%;
+    padding:48px 34px 38px;
+    text-align:center;
+    position:relative;
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.5s cubic-bezier(.2,1,.3,1);
+    background:var(--glass-strong);
+  }
+  #messageOverlay.show .message-card{ transform:scale(1) translateY(0); }
+  .close-btn{
+    position:absolute; top:18px; right:18px;
+    width:30px; height:30px; border-radius:50%;
+    border:none; background:rgba(255,255,255,0.6);
+    color:var(--plum); font-size:1rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s ease;
+  }
+  .close-btn:hover{ background:rgba(255,255,255,0.9); }
+  .gift-icon{ font-size:2.4rem; margin-bottom:8px; }
+  .message-card h2{ font-size:1.7rem; color:var(--p4); margin-bottom:18px; font-style:italic; }
+  .message-body{
+    font-family:'Fraunces', serif;
+    font-size:1.05rem;
+    line-height:1.75;
+    color:var(--plum-soft);
+    margin-bottom:10px;
+    text-align:left;
+  }
+  .message-body.placeholder{ opacity:0.65; font-style:italic; }
+  .message-sign{ margin-top:16px; font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--p4); }
+  .message-emojis{ margin-top:16px; font-size:1.2rem; letter-spacing:8px; }
+
+  /* ---------- Cherished Moments ---------- */
+  #moments{ padding:100px 0 120px; position:relative; }
+  .moments-head{ text-align:center; margin-bottom:56px; padding:0 20px; }
+  .moments-head .eyebrow{ display:block; margin-bottom:10px; }
+  .moments-head h2{ font-size:clamp(2.1rem, 6vw, 3.2rem); color:var(--plum); }
+  .moments-head p{ color:var(--plum-soft); margin-top:10px; font-size:0.98rem; }
+
+  .marquee-row{
+    display:flex;
+    gap:22px;
+    width:max-content;
+    padding:6px 0;
+  }
+  .marquee-track{ overflow:hidden; margin-bottom:24px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee-row.left{ animation: scrollLeft 34s linear infinite; }
+  .marquee-row.right{ animation: scrollRight 34s linear infinite; }
+  @keyframes scrollLeft{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @keyframes scrollRight{ from{ transform:translateX(-50%); } to{ transform:translateX(0); } }
+
+  .moment-card{
+    width:230px; height:290px;
+    border-radius:22px;
+    overflow:hidden;
+    position:relative;
+    cursor:pointer;
+    flex-shrink:0;
+    box-shadow: 0 12px 34px rgba(216,80,140,0.22);
+    border:1px solid var(--glass-border);
+    transition: transform 0.35s ease;
+  }
+  .moment-card:hover{ transform: translateY(-6px) scale(1.02); }
+ .moment-photo{
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,0.25);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.moment-photo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+}
+  .moment-overlay{
+    position:absolute; left:0; right:0; bottom:0;
+    padding:16px 16px 14px;
+    background: linear-gradient(to top, rgba(74,36,64,0.72), transparent);
+    color:#fff;
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:0.95rem;
+  }
+
+  #moments.paused .marquee-row{ animation-play-state:paused; }
+
+  /* ---------- Moment Detail Overlay ---------- */
+  #momentOverlay{
+    position:fixed; inset:0; z-index:70;
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    background: rgba(74,36,64,0.5);
+    backdrop-filter: blur(8px);
+    opacity:0; visibility:hidden;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+  }
+  #momentOverlay.show{ opacity:1; visibility:visible; }
+  .moment-detail{
+    max-width:900px; width:100%;
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    overflow:hidden;
+    transform: scale(0.9);
+    transition: transform 0.45s cubic-bezier(.2,1,.3,1);
+    background:var(--glass-strong);
+    position:relative;
+  }
+  #momentOverlay.show .moment-detail{ transform:scale(1); }
+  .moment-detail-photo{
+    min-height:280px;
+    background: linear-gradient(150deg, #ffd3e6, #ff8fc0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.moment-detail-photo img{
+    width:100%;
+    height:100%;
+    min-height:280px;
+    object-fit:cover;
+    display:block;
+}
+  .moment-detail-info{ padding:40px 34px; display:flex; flex-direction:column; justify-content:center; }
+  .moment-detail-info .eyebrow{ margin-bottom:10px; }
+  .moment-detail-info h3{ font-size:1.7rem; color:var(--p4); font-style:italic; margin-bottom:6px; }
+  .moment-date{ font-size:0.78rem; color:var(--plum-soft); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:18px; }
+  .moment-desc{ font-family:'Fraunces', serif; font-style:italic; color:var(--plum-soft); line-height:1.7; opacity:0.8; }
+
+  @media (max-width:640px){
+    .moment-detail{ grid-template-columns:1fr; }
+    .moment-detail-photo{ min-height:220px; }
+  }
+
+  footer{
+    text-align:center; padding:50px 20px 70px;
+    font-size:0.8rem; color:var(--plum-soft); opacity:0.8;
+    position:relative; z-index:2;
+  }
+
+  .confetti-piece{ position:fixed; top:-20px; z-index:80; pointer-events:none; border-radius:2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    body, #opening, .orb-ring, .tap-hint, .scroll-hint, .marquee-row{ animation:none !important; }
+  }
+
+  ::selection{ background: var(--p3); color:#fff; }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<!-- OPENING SCREEN -->
+<div id="opening">
+  <div class="orb-ring">✨</div>
+  <span class="opening-sparkle">A Magical Surprise For You</span>
+  <h1>Something beautiful is waiting on the other side...</h1>
+  <span class="tap-hint">✦ tap anywhere to begin ✦</span>
+</div>
+
+<!-- MAIN INTERFACE -->
+<div id="main">
+  <section class="hero" id="heroSection">
+    <span class="eyebrow">Today is a very special day</span>
+    <h1>Happiest Birthday,<br><em>My Beautiful Girl</em> 💗</h1>
+    <p class="sub">A little something made just for you mazhiiii mauuu 🐱.</p>
+    <button class="surprise-btn" id="openSurpriseBtn">🎁 Open Your Surprise</button>
+    <div class="scroll-hint">↓ SCROLL KAR, khali azun kahi tari ahe ↓</div>
+  </section>
+
+  <section id="moments">
+    <div class="moments-head">
+      <span class="eyebrow">Our story in pictures</span>
+      <h2> Some Cherished Moments ✨</h2>
+      <p class="sub">Pratyek Image var click kar plss.</p>
+    </div>
+
+    <div class="marquee-track">
+      <div class="marquee-row left" id="rowLeft"></div>
+    </div>
+    <div class="marquee-track">
+      <div class="marquee-row right" id="rowRight"></div>
+    </div>
+  </section>
+
+  <footer>Made with true love 💗 just for you balaaa 👀👀👀</footer>
+</div>
+
+<!-- SECRET MESSAGE OVERLAY -->
+<div id="messageOverlay">
+  <div class="message-card glass">
+    <button class="close-btn" id="closeMessage">✕</button>
+    <div class="gift-icon">🎁</div>
+    <h2>A Message from my Heart...</h2>
+    <p class="message-body placeholder" id="secretMessageText">Happiesttt Birthday bacchaaa....mazhi maau ,,!! 
+You are my favourite person 😚🥰👀...
+This is your special day🎉💗..god bless you 😇 
+Khup pudhe jaa , khup mothi ho !!! 📈 
+And I will always be with you always 🫂🤗...
+Tuzach a me 😁💯👀...just tu accept karat nahi a te 😁...
+Anyways....Happy Birthday one again...enjoy your day maudyaa 😘. Tula Konachich nazar nahi lagavi 🧿 
+LOVE YOU bala....❤️✨💗 
+Today its your bday ,idk maybe its right to confess it over here or not , but stilll;
+I love you !!!! Plsss be mineeeee !!!!!</p>
+    <p class="message-sign">Happy Birthday mazhi मनी माऊ.</p>
+    <div class="message-emojis">🌸 💫 🌷 💖</div>
+  </div>
+</div>
+
+<!-- MOMENT DETAIL OVERLAY -->
+<div id="momentOverlay">
+  <div class="moment-detail glass">
+    <button class="close-btn" id="closeMoment" style="z-index:2;">✕</button>
+    <div class="moment-detail-photo" id="momentDetailPhoto">📷</div>
+    <div class="moment-detail-info">
+      <span class="eyebrow" id="momentDetailEyebrow">Moment which we have spent together</span>
+      <h3 id="momentDetailTitle">Moment Title</h3>
+      <span class="moment-date" id="momentDetailDate">Date here</span>
+      <p class="moment-desc" id="momentDetailDesc">A short caption or story about this memory will appear here once you add it.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------------- Floating particles ----------------
+  const particlesContainer = document.getElementById('particles');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduceMotion){
+    for(let i=0;i<26;i++){
+      const p = document.createElement('div');
+      p.className='particle';
+      const size = 3 + Math.random()*6;
+      p.style.width = size+'px';
+      p.style.height = size+'px';
+      p.style.left = Math.random()*100+'vw';
+      p.style.bottom = '-20px';
+      p.style.animationDuration = (10+Math.random()*14)+'s';
+      p.style.animationDelay = (Math.random()*14)+'s';
+      particlesContainer.appendChild(p);
+    }
+  }
+
+  // ---------------- Opening screen ----------------
+  const opening = document.getElementById('opening');
+  const heroSection = document.getElementById('heroSection');
+  opening.addEventListener('click', () => {
+    opening.classList.add('hide');
+    setTimeout(() => heroSection.classList.add('reveal'), 250);
+  }, { once:true });
+
+  // ---------------- Secret message ----------------
+  const messageOverlay = document.getElementById('messageOverlay');
+  document.getElementById('openSurpriseBtn').addEventListener('click', () => {
+    messageOverlay.classList.add('show');
+    launchConfetti(40);
+  });
+  document.getElementById('closeMessage').addEventListener('click', () => {
+    messageOverlay.classList.remove('show');
+  });
+  messageOverlay.addEventListener('click', (e) => {
+    if(e.target === messageOverlay) messageOverlay.classList.remove('show');
+  });
+
+  // ---------------- Cherished Moments data (placeholders) ----------------
+ const moments = [
+
+  {
+    title: "1st Contact",
+    date: "6th Oct 2025",
+    desc: "This is the day, this cute si Billi came into my life...",
+    image: "images/photo1.jpeg"
+  },
+
+  {
+    title: "That One Trip",
+    date: "10th Nov 2025",
+    desc: "Our 1st short trip together. This was the day I felt that tu khup kahi ahes mazhyasathi !!! This day is unforgettable for me.",
+    image: "images/photo2.jpeg"
+  },
+
+  {
+    title: "The Silly One",
+    date: "27th Nov 2025",
+    desc: "This is actually the silly thing to discuss here 😂. This is the rose I never got. And me gheil te ohkk !!",
+    image: "images/photo3.jpeg"
+  },
+
+  {
+    title: "My CAT",
+    date: "A special memory",
+    desc: "Tuzhya kade jasa tuza bhuru ahe na, tashi mazhi hi ek manzar ahe !!! Bhai khup danger a! But cute pn khup ahe...",
+    image: "images/photo4.jpeg"
+  },
+
+  {
+    title: "Close Bonding🫂",
+    desc: "There were many moments we got closely connected,, and those were the moments me kadhichhh nahi visarnar!!!",
+    image: "images/photo5.jpeg"
+  },
+
+  {
+    title: "Celebration Day",
+    date: "28th August",
+    desc: "And this is finally the special day of my girl!! Apka Prakat divas! Aap is duniya me aye, aur hume mil gaye! jokes apart ,,,,, but ; a very warm wishes to the very important person of my life !!!",
+    image: "images/photo6.jpeg"
+  }
+
+];
+
+  function buildCard(m){
+  const card = document.createElement('div');
+
+  card.className = 'moment-card';
+
+  card.innerHTML = `
+    <div class="moment-photo">
+      <img src="${m.image}" alt="${m.title}">
+    </div>
+
+    <div class="moment-overlay">
+      ${m.title}
+    </div>
+  `;
+
+  card.addEventListener('click', () => openMoment(m));
+
+  return card;
+}
+
+  const rowLeft = document.getElementById('rowLeft');
+  const rowRight = document.getElementById('rowRight');
+
+  // duplicate list for seamless loop
+  const setA = [...moments, ...moments];
+  const setB = [...moments.slice().reverse(), ...moments.slice().reverse()];
+
+  setA.forEach(m => rowLeft.appendChild(buildCard(m)));
+  setB.forEach(m => rowRight.appendChild(buildCard(m)));
+
+  // pause marquee on hover/touch
+  const momentsSection = document.getElementById('moments');
+  momentsSection.addEventListener('mouseenter', () => momentsSection.classList.add('paused'));
+  momentsSection.addEventListener('mouseleave', () => momentsSection.classList.remove('paused'));
+
+  // ---------------- Moment detail overlay ----------------
+  const momentOverlay = document.getElementById('momentOverlay');
+  function openMoment(m){
+
+  const photoBox = document.getElementById('momentDetailPhoto');
+
+  photoBox.innerHTML = `
+    <img src="${m.image}" alt="${m.title}">
+  `;
+
+  document.getElementById('momentDetailTitle').textContent = m.title;
+
+  document.getElementById('momentDetailDate').textContent = m.date;
+
+  document.getElementById('momentDetailDesc').textContent = m.desc;
+
+  momentOverlay.classList.add('show');
+}
+  document.getElementById('closeMoment').addEventListener('click', () => {
+    momentOverlay.classList.remove('show');
+  });
+  momentOverlay.addEventListener('click', (e) => {
+    if(e.target === momentOverlay) momentOverlay.classList.remove('show');
+  });
+
+  // ---------------- Confetti ----------------
+  function launchConfetti(count){
+    if(reduceMotion) return;
+    const colors = ['#ff9cc0','#ffc9dd','#e85d8a','#ffe4ee','#fff'];
+    for(let i=0;i<count;i++){
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        const size = 6 + Math.random()*6;
+        el.style.width = size+'px';
+        el.style.height = size*1.4+'px';
+        el.style.left = Math.random()*100+'vw';
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.opacity = 0.85;
+        document.body.appendChild(el);
+        const duration = 3200 + Math.random()*1800;
+        const drift = (Math.random()-0.5)*200;
+        el.animate([
+          { transform:'translate(0,0) rotate(0deg)', opacity:0.9 },
+          { transform:`translate(${drift}px, 100vh) rotate(${360+Math.random()*360}deg)`, opacity:0.3 }
+        ], { duration, easing:'ease-in' }).onfinish = () => el.remove();
+      }, i*30);
+    }
+  }
+</script>
+
+</body>
+</html>
